@@ -2,11 +2,11 @@ export type TPerson = {
     id?: number;
     documentNumber: string;
     documentType: string;
-    firstName: string | null;
-    middleName?: string | null;
+    firstName: string;
+    middleName?: string;
     lastName: string;
-    secondLastName?: string | null;
-    birthDate: Date;
+    secondLastName?: string;
+    birthDate: Date | null;
     birthCountry: string;
     gender: string;
     maritalStatus: string;

@@ -4,8 +4,13 @@ import { Title } from "../../../shared/components/title.component";
 import { Button } from "../../../shared/components/button.component";
 import { IoSearch } from "react-icons/io5";
 import { PersonForm } from "../components/person-form.component";
+import { usePersonsHook } from "../hooks/use-persons.hook";
 
-export function PersonsInterface() {
+type PersonsInterfaceProps = {
+    controller: ReturnType<typeof usePersonsHook>;
+}
+
+export function PersonsInterface({ controller }: PersonsInterfaceProps) {
     return (
         <div>
             <Title title="Información" />
@@ -20,7 +25,7 @@ export function PersonsInterface() {
                 <Button variant="outlined" color="primary" endIcon={<IoSearch />}>Pesquisa Avanzada</Button>
             </Stack>
             <Title title="Resultados" />
-            <PersonForm />
+            <PersonForm onSubmit={controller.action.createPerson} />
         </div>
     );
 }

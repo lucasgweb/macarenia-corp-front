@@ -37,7 +37,7 @@ export function ModalSearchPerson() {
     ];
 
     return (
-        <Dialog open={true} fullWidth maxWidth="lg">
+        <Dialog open={false} fullWidth maxWidth="lg">
             <DialogTitle><Title title='Búsqueda Avanzada' /></DialogTitle>
             <DialogContent>
                 <TextField

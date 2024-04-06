@@ -1,7 +1,6 @@
-import React from 'react';
 import { Dialog, DialogContent, DialogTitle, TextField, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { MdDeleteOutline, MdModeEditOutline, MdVisibility } from 'react-icons/md';
+import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md';
 import { Title } from '../../../shared/components/title.component';
 export function ModalSearchPerson() {
     const rows = [
@@ -26,7 +25,6 @@ export function ModalSearchPerson() {
             width: 130,
             renderCell: () => (
                 <strong>
-                    {/* Botões de ação, defina os onClick handlers conforme necessário */}
                     <IconButton aria-label="edit">
                         <MdModeEditOutline />
                     </IconButton>

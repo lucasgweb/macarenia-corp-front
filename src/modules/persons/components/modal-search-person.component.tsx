@@ -5,18 +5,24 @@ import { MdDeleteOutline, MdModeEditOutline, MdVisibility } from 'react-icons/md
 import { Title } from '../../../shared/components/title.component';
 export function ModalSearchPerson() {
     const rows = [
-        // Suponha que esses são seus dados, ajuste conforme necessário
-        { id: 1, documentNumber: 'ID-00001', fullName: 'Ray Luna Figueroa', specificFilter: 'Ray tiene hijxs', action: '' },
-        // ... outros dados
+        { id: 1, documentType: 'CC', documentNumber: '123456789', firstName: 'Juan', firtsLastName: 'Perez' },
+        {
+            id: 2, documentType: 'CC', documentNumber: '987654321', firstName: 'Pedro', firtsLastName: 'Gomez'
+        },
+        { id: 3, documentType: 'CC', documentNumber: '123456789', firstName: 'Juan', firtsLastName: 'Perez' },
+        { id: 4, documentType: 'CC', documentNumber: '987654321', firstName: 'Pedro', firtsLastName: 'Gomez' },
+        { id: 5, documentType: 'CC', documentNumber: '123456789', firstName: 'Juan', firtsLastName: 'Perez' },
+        { id: 6, documentType: 'CC', documentNumber: '987654321', firstName: 'Pedro', firtsLastName: 'Gomez' },
     ];
 
     const columns = [
-        { field: 'documentNumber', headerName: 'Número documento', width: 130 },
-        { field: 'fullName', headerName: 'Nome completo', width: 130 },
-        { field: 'specificFilter', headerName: 'Filtro específico', width: 130 },
+        { field: 'documentType ', headerName: 'Tipo documento', width: 130, flex: 1 },
+        { field: 'documentNumber', headerName: 'Número documento', width: 130, flex: 1 },
+        { field: 'firstName', headerName: 'Primer nombre', width: 130, flex: 1 },
+        { field: 'firtsLastName', headerName: 'Primer apellido', width: 130, flex: 1 },
         {
             field: 'action',
-            headerName: 'Ação',
+            headerName: 'Acción',
             width: 130,
             renderCell: () => (
                 <strong>
@@ -26,9 +32,6 @@ export function ModalSearchPerson() {
                     </IconButton>
                     <IconButton aria-label="delete">
                         <MdDeleteOutline />
-                    </IconButton>
-                    <IconButton aria-label="view">
-                        <MdVisibility />
                     </IconButton>
                 </strong>
             ),

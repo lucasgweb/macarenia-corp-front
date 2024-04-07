@@ -13,13 +13,16 @@ import { DOCUMENT_TYPES } from "../constants/documents-types.constant";
 type PersonFormProps = {
     onSubmit: (data: TPerson) => void;
     form: UseFormReturn<TPersonFormData>;
+    type: 'create' | 'edit';
+    onClear: () => void;
 }
 
 
-export function PersonForm({ onSubmit, form }: PersonFormProps) {
+export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
 
     function handleSubmit(data: TPersonFormData) {
         onSubmit({
+            id: data.id,
             documentNumber: data.documentNumber,
             documentType: data.documentType,
             firstName: data.firstName,
@@ -36,16 +39,24 @@ export function PersonForm({ onSubmit, form }: PersonFormProps) {
         <Stack spacing={2}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
 
+                <TextField sx={{
+                    display: 'none'
+
+                }} {...form.register('id')} />
+
+
                 <Stack direction={{
                     xs: 'column',
                     sm: 'row'
                 }} spacing={3} mb={2}>
+
 
                     <FormControl fullWidth>
                         <Controller render={({ field: { value, onChange } }) => (
                             <>
                                 <InputLabel size="small">Tipo de Documento</InputLabel>
                                 <Select
+                                    disabled={type === 'edit' ? true : false}
                                     size="small"
                                     {...{ value, onChange }}
                                     label="Tipo de Documento"
@@ -60,7 +71,7 @@ export function PersonForm({ onSubmit, form }: PersonFormProps) {
                     </FormControl>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Numero del documento" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }}
+                            <TextField  {...field} label="Numero del documento" disabled={type === 'edit' ? true : false} fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }}
                             />
                         )} name="documentNumber" control={form.control} />
                     </FormControl>
@@ -146,11 +157,11 @@ export function PersonForm({ onSubmit, form }: PersonFormProps) {
                         )} name="maritalStatus" control={form.control} />
                     </FormControl>
                 </Stack>
-                <Stack direction="row" spacing={2}>
+                <Stack direction='row' spacing={2} mt={2} flex={1} justifyContent='flex-end'>
 
-                    <Button variant="outlined" color="info" endIcon={<FaEraser />}>Limpiar</Button>
+                    <Button variant="outlined" color="info" endIcon={<FaEraser />} onClick={onClear}>Limpiar</Button>
                     <Button variant="contained" color="primary" type="submit" endIcon={<IoSaveOutline />}>Guardar</Button>
-                    <Button variant="contained" color="error" endIcon={<IoCloseOutline />}>Cancelar</Button>
+                    <Button variant="contained" color="error" endIcon={<IoCloseOutline />} onClick={onClear}>Cancelar</Button>
                 </Stack>
             </form >
         </Stack >

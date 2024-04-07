@@ -44,7 +44,7 @@ export function PersonsInterface({ controller }: PersonsInterfaceProps) {
                 <Button variant="outlined" color="primary" endIcon={<IoSearch />} onClick={() => controller.action.setIsOpenModal(true)}>Pesquisa Avanzada</Button>
             </Stack>
             <Title title="Información" />
-            <PersonForm onSubmit={controller.action.handleSubmit} form={controller.action.form} />
+            <PersonForm onSubmit={controller.action.handleSubmit} form={controller.action.form} type={controller.state.typeOperation} onClear={() => controller.action.handleClearForm()} />
         </div>
     );
 }

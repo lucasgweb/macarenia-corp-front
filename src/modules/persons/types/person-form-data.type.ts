@@ -1,5 +1,6 @@
 
 export type TPersonFormData = {
+    id?: number;
     documentNumber: string;
     documentType: string;
     firstName: string;

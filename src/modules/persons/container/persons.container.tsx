@@ -6,6 +6,6 @@ export function PersonsContainer() {
     const controller = usePersonsHook();
     return <>
         <PersonsInterface controller={controller} />
-        <ModalSearchPerson />
+        <ModalSearchPerson onClose={() => controller.action.setIsOpenModal(false)} open={controller.state.isOpenModal} />
     </>
 }

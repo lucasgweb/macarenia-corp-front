@@ -2,7 +2,16 @@ import { Dialog, DialogContent, DialogTitle, TextField, IconButton } from "@mui/
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md';
 import { Title } from '../../../shared/components/title.component';
-export function ModalSearchPerson() {
+import { Button } from "../../../shared/components/button.component";
+
+type ModalSearchPersonProps = {
+    open: boolean;
+    onClose: () => void;
+};
+
+
+
+export function ModalSearchPerson({ open, onClose }: ModalSearchPersonProps) {
     const rows = [
         { id: 1, documentType: 'CC', documentNumber: '123456789', firstName: 'Juan', firtsLastName: 'Perez' },
         {
@@ -37,7 +46,7 @@ export function ModalSearchPerson() {
     ];
 
     return (
-        <Dialog open={false} fullWidth maxWidth="lg">
+        <Dialog open={open} fullWidth maxWidth="lg" onClose={onClose}>
             <DialogTitle><Title title='Búsqueda Avanzada' /></DialogTitle>
             <DialogContent>
                 <TextField
@@ -52,6 +61,8 @@ export function ModalSearchPerson() {
                         columns={columns}
                     />
                 </div>
+                <Button variant="contained" color="primary">Limpiar</Button>
+                <Button onClick={onClose} variant="contained" color="error">Cancelar</Button>
             </DialogContent>
         </Dialog>
     );

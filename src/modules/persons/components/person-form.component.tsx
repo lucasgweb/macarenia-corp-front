@@ -1,33 +1,22 @@
-import { FormControl, Stack, TextField } from "@mui/material";
-import { Input } from "../../../shared/components/input.component";
+import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { Button } from "../../../shared/components/button.component";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IoSaveOutline, IoCloseOutline } from "react-icons/io5";
 import { FaEraser } from "react-icons/fa6";
 import { TPerson } from "../types/person.type";
-import { useForm } from "react-hook-form";
-import { Dayjs } from "dayjs";
+import { Controller, UseFormReturn } from "react-hook-form";
+import dayjs, { Dayjs } from "dayjs";
+import { TPersonFormData } from "../types/person-form-data.type";
+import { DOCUMENT_TYPES } from "../constants/documents-types.constant";
 
-type TPersonFormData = {
-    documentNumber: string;
-    documentType: string;
-    firstName: string;
-    middleName?: string;
-    lastName: string;
-    secondLastName?: string;
-    birthDate: Date | null;
-    birthCountry: string;
-    gender: string;
-    maritalStatus: string;
-}
 
 type PersonFormProps = {
     onSubmit: (data: TPerson) => void;
+    form: UseFormReturn<TPersonFormData>;
 }
 
 
-export function PersonForm({ onSubmit }: PersonFormProps) {
-    const form = useForm<TPersonFormData>()
+export function PersonForm({ onSubmit, form }: PersonFormProps) {
 
     function handleSubmit(data: TPersonFormData) {
         onSubmit({
@@ -45,60 +34,116 @@ export function PersonForm({ onSubmit }: PersonFormProps) {
     }
     return (
         <Stack spacing={2}>
-            <form {...form} onSubmit={form.handleSubmit(handleSubmit)}>
-                <Stack direction={{
-                    xs: 'column',
-                    sm: 'row'
-                }} spacing={2} >
-                    <FormControl fullWidth>
-                        <TextField {...form.register('firstName')} label="Primer Nombre" fullWidth size="small" />
-                        <p>{form.formState.errors?.firstName?.message}</p>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <TextField {...form.register('secondLastName')} label="Segundo Nombre" fullWidth size="small" />
-                        <p>{form.formState.errors?.secondLastName?.message}</p>
-                    </FormControl>
-                </Stack>
-                <Stack direction={{
-                    xs: 'column',
-                    sm: 'row'
-                }} spacing={2} >
-                    <FormControl fullWidth>
-                        <TextField {...form.register('lastName')} label="Primer Apellido" fullWidth size="small" />
-                        <p>{form.formState.errors?.lastName?.message}</p>
-                    </FormControl>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
 
-                    <TextField {...form.register('secondLastName')} label="Segundo Apellido" fullWidth size="small" />
-                </Stack>
                 <Stack direction={{
                     xs: 'column',
                     sm: 'row'
-                }} spacing={2} >
-                    <DatePicker
-                        {...form.register('birthDate')}
-                        slotProps={{ textField: { size: 'small', fullWidth: true } }}
-                        label="Fecha Nacimiento"
-                        onChange={(value: Dayjs | null) => {
-                            return form.setValue('birthDate', value?.toDate() ?? null);
-                        }}
-                    />
-                    <FormControl fullWidth>
-                        <TextField {...form.register('birthCountry')} label="País de Nacimiento" fullWidth size="small" />
-                        <p>{form.formState.errors?.birthCountry?.message}</p>
-                    </FormControl>
-                </Stack>
-                <Stack direction={{
-                    xs: 'column',
-                    sm: 'row'
-                }} spacing={2} >
-                    <FormControl fullWidth>
-                        <TextField {...form.register('gender')} label="Genero" fullWidth size="small" />
-                        <p>{form.formState.errors?.gender?.message}</p>
-                    </FormControl>
+                }} spacing={3} mb={2}>
 
                     <FormControl fullWidth>
-                        <TextField {...form.register('maritalStatus')} label="Estado Civil" fullWidth size="small" />
-                        <p>{form.formState.errors?.maritalStatus?.message}</p>
+                        <Controller render={({ field: { value, onChange } }) => (
+                            <>
+                                <InputLabel size="small">Tipo de Documento</InputLabel>
+                                <Select
+                                    size="small"
+                                    {...{ value, onChange }}
+                                    label="Tipo de Documento"
+                                >
+                                    {DOCUMENT_TYPES.map((documentType) => (
+                                        <MenuItem key={documentType.value} value={documentType.value}>{documentType.label}</MenuItem>
+                                    ))}
+                                </Select>
+                            </>
+                        )} name="documentType" control={form.control} />
+
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Numero del documento" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }}
+                            />
+                        )} name="documentNumber" control={form.control} />
+                    </FormControl>
+                </Stack>
+                <Stack direction={{
+                    xs: 'column',
+                    sm: 'row'
+                }} spacing={2} mb={2} >
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Primer Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="firstName" control={form.control} />
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Segundo Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="middleName" control={form.control} />
+                    </FormControl>
+                </Stack>
+                <Stack direction={{
+                    xs: 'column',
+                    sm: 'row'
+                }} spacing={2} mb={2}>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Primer Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="lastName" control={form.control} />
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Segundo Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="secondLastName" control={form.control} />
+                    </FormControl>
+                </Stack>
+                <Stack direction={{
+                    xs: 'column',
+                    sm: 'row'
+                }} spacing={2} mb={2}>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <DatePicker
+                                {...field}
+                                slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                                label="Fecha Nacimiento"
+                                onChange={(value: Dayjs | null) => {
+                                    return form.setValue('birthDate', value?.toDate() ?? null);
+                                }}
+                                value={field.value ? dayjs(field.value) : null}
+                            />
+                        )} name="birthDate" control={form.control} />
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="País de Nacimiento" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="birthCountry" control={form.control} />
+                    </FormControl>
+                </Stack>
+                <Stack direction={{
+                    xs: 'column',
+                    sm: 'row'
+                }} spacing={2} mb={2} >
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <>
+                                <InputLabel size="small">Genero</InputLabel>
+                                <Select
+                                    size="small"
+                                    {...field}
+                                    defaultValue={field.value}
+                                    label="Genero"
+                                >
+                                    <MenuItem value='M'>Masculino</MenuItem>
+                                    <MenuItem value='F'>Femenino</MenuItem>
+                                    <MenuItem value='O'>Otro</MenuItem>
+                                </Select>
+                            </>
+                        )} name="gender" control={form.control} />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <Controller render={({ field }) => (
+                            <TextField {...field} label="Estado Civil" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                        )} name="maritalStatus" control={form.control} />
                     </FormControl>
                 </Stack>
                 <Stack direction="row" spacing={2}>
@@ -107,7 +152,7 @@ export function PersonForm({ onSubmit }: PersonFormProps) {
                     <Button variant="contained" color="primary" type="submit" endIcon={<IoSaveOutline />}>Guardar</Button>
                     <Button variant="contained" color="error" endIcon={<IoCloseOutline />}>Cancelar</Button>
                 </Stack>
-            </form>
-        </Stack>
+            </form >
+        </Stack >
     );
 }

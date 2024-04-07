@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-const baseURL: string = 'http://127.0.0.1:3000';
+const baseURL: string = 'https://macarenia-corp-backend.onrender.com';
 
 export const api: AxiosInstance = axios.create({
   baseURL,

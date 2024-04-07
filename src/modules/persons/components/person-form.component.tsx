@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { Button } from "../../../shared/components/button.component";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IoSaveOutline, IoCloseOutline } from "react-icons/io5";
@@ -6,8 +6,8 @@ import { FaEraser } from "react-icons/fa6";
 import { TPerson } from "../types/person.type";
 import { Controller, UseFormReturn } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
-import { TPersonFormData } from "../types/person-form-data.type";
 import { DOCUMENT_TYPES } from "../constants/documents-types.constant";
+import { TPersonFormData } from "../valitdations/person-form.validation";
 
 
 type PersonFormProps = {
@@ -56,6 +56,7 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                             <>
                                 <InputLabel size="small">Tipo de Documento</InputLabel>
                                 <Select
+                                    error={!!form.formState.errors?.documentType}
                                     disabled={type === 'edit' ? true : false}
                                     size="small"
                                     {...{ value, onChange }}
@@ -65,15 +66,21 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                                         <MenuItem key={documentType.value} value={documentType.value}>{documentType.label}</MenuItem>
                                     ))}
                                 </Select>
+                                <FormHelperText sx={{
+                                    color: 'red'
+                                }}>{form.formState.errors?.documentType?.message}</FormHelperText>
                             </>
                         )} name="documentType" control={form.control} />
 
                     </FormControl>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField  {...field} label="Numero del documento" disabled={type === 'edit' ? true : false} fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }}
+                            <TextField error={!!form.formState.errors?.documentNumber} {...field} label="Numero del documento" disabled={type === 'edit' ? true : false} fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }}
                             />
                         )} name="documentNumber" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.documentNumber?.message}</FormHelperText>
                     </FormControl>
                 </Stack>
                 <Stack direction={{
@@ -82,13 +89,19 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                 }} spacing={2} mb={2} >
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Primer Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.firstName} {...field} label="Primer Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="firstName" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.firstName?.message}</FormHelperText>
                     </FormControl>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Segundo Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.middleName} {...field} label="Segundo Nombre" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="middleName" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.middleName?.message}</FormHelperText>
                     </FormControl>
                 </Stack>
                 <Stack direction={{
@@ -97,13 +110,19 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                 }} spacing={2} mb={2}>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Primer Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.lastName} {...field} label="Primer Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="lastName" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.lastName?.message}</FormHelperText>
                     </FormControl>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Segundo Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.secondLastName} {...field} label="Segundo Apellido" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="secondLastName" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.secondLastName?.message}</FormHelperText>
                     </FormControl>
                 </Stack>
                 <Stack direction={{
@@ -114,19 +133,25 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                         <Controller render={({ field }) => (
                             <DatePicker
                                 {...field}
-                                slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                                slotProps={{ textField: { size: 'small', fullWidth: true, error: !!form.formState.errors?.birthDate, } }}
                                 label="Fecha Nacimiento"
                                 onChange={(value: Dayjs | null) => {
-                                    return form.setValue('birthDate', value?.toDate() ?? null);
+                                    return form.setValue('birthDate', value!.toDate());
                                 }}
                                 value={field.value ? dayjs(field.value) : null}
                             />
                         )} name="birthDate" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.birthDate?.message}</FormHelperText>
                     </FormControl>
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="País de Nacimiento" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.birthCountry} {...field} label="País de Nacimiento" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="birthCountry" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.birthCountry?.message}</FormHelperText>
                     </FormControl>
                 </Stack>
                 <Stack direction={{
@@ -138,6 +163,7 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                             <>
                                 <InputLabel size="small">Genero</InputLabel>
                                 <Select
+                                    error={!!form.formState.errors?.gender}
                                     size="small"
                                     {...field}
                                     defaultValue={field.value}
@@ -149,12 +175,18 @@ export function PersonForm({ onSubmit, form, type, onClear }: PersonFormProps) {
                                 </Select>
                             </>
                         )} name="gender" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.gender?.message}</FormHelperText>
                     </FormControl>
 
                     <FormControl fullWidth>
                         <Controller render={({ field }) => (
-                            <TextField {...field} label="Estado Civil" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
+                            <TextField error={!!form.formState.errors?.maritalStatus} {...field} label="Estado Civil" fullWidth size="small" value={field.value} InputLabelProps={{ shrink: !!field.value }} />
                         )} name="maritalStatus" control={form.control} />
+                        <FormHelperText sx={{
+                            color: 'red'
+                        }}>{form.formState.errors?.maritalStatus?.message}</FormHelperText>
                     </FormControl>
                 </Stack>
                 <Stack direction='row' spacing={2} mt={2} flex={1} justifyContent='flex-end'>

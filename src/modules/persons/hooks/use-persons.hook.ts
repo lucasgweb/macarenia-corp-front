@@ -2,32 +2,34 @@
 import { useEffect, useState } from 'react';
 import { createPersonService } from '../services/create-person.service';
 import { TPerson } from '../types/person.type';
-import { set, useForm } from 'react-hook-form';
-import { TPersonFormData } from '../types/person-form-data.type';
+import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2'
 import { searchPersonsService } from '../services/search-person.service';
 import { updatePersonService } from '../services/update-person.service';
 import { deletePersonService } from '../services/delete-person.service';
+import { TPersonFormData, personFormResolver } from '../valitdations/person-form.validation';
+import axios from 'axios';
 
 export function usePersonsHook() {
 
     const [documentType, setDocumentType] = useState('');
     const [documentNumber, setDocumentNumber] = useState('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
     const [typeOperation, setTypeOperation] = useState<'create' | 'edit'>('create');
-        const [filterText, setFilterText] = useState('');
+    const [filterText, setFilterText] = useState('');
     const [persons, setPersons] = useState([] as TPerson[]);
 
     const form = useForm<TPersonFormData>({
+        resolver: personFormResolver,
         defaultValues: {
+            id: undefined,
             documentNumber: '',
             documentType: '',
             firstName: '',
             middleName: '',
             lastName: '',
             secondLastName: '',
-            birthDate: null,
+            birthDate: undefined,
             birthCountry: '',
             gender: '',
             maritalStatus: '',
@@ -47,13 +49,14 @@ export function usePersonsHook() {
     function clearForm() {
 
         form.reset({
+            id: undefined,
             documentNumber: '',
             documentType: '',
             firstName: '',
             middleName: '',
             lastName: '',
             secondLastName: '',
-            birthDate: null,
+            birthDate: undefined,
             birthCountry: '',
             gender: '',
             maritalStatus: '',
@@ -63,7 +66,7 @@ export function usePersonsHook() {
     }
 
     function handleClearForm() {
-         Swal.fire({
+        Swal.fire({
             title: '¿Estás seguro de que desea limpiar el formulario?',
             showDenyButton: true,
             confirmButtonText: 'Confirmar',
@@ -125,6 +128,8 @@ export function usePersonsHook() {
 
     const createPerson = async (data: TPerson) => {
 
+        console.log(data);
+
         Swal.fire({
             title: '¿Estás seguro de que deseas guardar este registro?',
             showDenyButton: true,
@@ -138,7 +143,7 @@ export function usePersonsHook() {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                 try {
-                    await createPersonService({
+                     await createPersonService({
                         payload: {
                             documentNumber: data.documentNumber,
                             documentType: data.documentType,
@@ -153,14 +158,38 @@ export function usePersonsHook() {
                         }
                     });
 
+                    Swal.fire(
+                        '¡Guardado!',
+                        'La persona ha sido guardada.',
+                        'success'
+                    )
 
-                 clearForm();
+                    clearForm();
                 }
                 catch (error) {
+                    if (axios.isAxiosError(error)) {
+                        const response = error.response;
+                        if (response && response.status === 409) {
+                            Swal.fire(
+                                '¡Error!',
+                                'Ya existe una persona con el mismo número de documento y tipo de documento.',
+                                'error'
+                            );
+                        } else {
+                            Swal.fire(
+                                '¡Error!',
+                                'No se ha podido guardar la persona.',
+                                'error'
+                            );
+                        }
+                    } else {
+                        Swal.fire(
+                            '¡Error!',
+                            'Ha ocurrido un error inesperado.',
+                            'error'
+                        );
+                    }
                     console.error(error);
-                }
-                finally {
-                    setIsLoading(false);
                 }
                 return true;
             } else if (result.isDenied) {
@@ -170,7 +199,7 @@ export function usePersonsHook() {
 
     };
 
-     const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number) => {
 
         Swal.fire({
             title: '¿Estás seguro de que deseas borrar esta persona?',
@@ -190,13 +219,13 @@ export function usePersonsHook() {
 
                     setPersons(persons.filter(person => person.id !== id));
 
-                 Swal.fire(
-                    '¡Borrado!',
-                    'La persona ha sido borrada.',
-                    'success'
-                )
+                    Swal.fire(
+                        '¡Borrado!',
+                        'La persona ha sido borrada.',
+                        'success'
+                    )
 
-                clearForm();
+                    clearForm();
                 } catch (error) {
                     Swal.fire(
                         '¡Error!',
@@ -217,7 +246,7 @@ export function usePersonsHook() {
                 documentType
             });
 
-            if(response?.data.length === 0){
+            if (response?.data.length === 0) {
                 Swal.fire({
                     title: 'No se encontraron resultados',
                     text: 'No se encontraron registros con los datos ingresados',
@@ -248,7 +277,7 @@ export function usePersonsHook() {
         }
     };
 
-        const submitSearch = async (filterText: string) => {
+    const submitSearch = async (filterText: string) => {
         const response = await searchPersonsService({ filterText });
 
         if (response) {
@@ -286,7 +315,6 @@ export function usePersonsHook() {
             setFilterText
         },
         state: {
-            isLoading,
             isOpenModal,
             typeOperation,
             persons,

@@ -6,10 +6,11 @@ type createPersonServiceData = {
 };
 
 export async function createPersonService(data: createPersonServiceData) {
+    // eslint-disable-next-line no-useless-catch
     try {
         const response = await api.post('/persons', data.payload);
         return response.data;
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 }

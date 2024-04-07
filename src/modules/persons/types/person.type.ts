@@ -6,7 +6,7 @@ export type TPerson = {
     middleName?: string;
     lastName: string;
     secondLastName?: string;
-    birthDate: Date | null;
+    birthDate: Date;
     birthCountry: string;
     gender: string;
     maritalStatus: string;

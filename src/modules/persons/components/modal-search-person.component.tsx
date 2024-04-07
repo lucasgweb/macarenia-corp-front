@@ -58,9 +58,9 @@ export function ModalSearchPerson({ controller }: ModalSearchPersonProps) {
             <DialogTitle><Title title='Búsqueda Avanzada' /></DialogTitle>
             <DialogContent>
                 <TextField
-                    fullWidth
                     variant="outlined"
                     label="Buscar..."
+                    size="small"
                     margin="normal"
                     value={controller.state.filterText}
                     onChange={(e) => controller.action.setFilterText(e.currentTarget.value)}

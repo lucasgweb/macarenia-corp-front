@@ -1,3 +1,4 @@
 .swal2-container {
   z-index: 11000 !important; /* Valor de z-index maior que o do modal do MUI */
+  font-family: 'Roboto', sans-serif;
 }

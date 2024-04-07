@@ -4,27 +4,20 @@ import { DataGrid } from "@mui/x-data-grid";
 import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md';
 import { Title } from '../../../shared/components/title.component';
 import { Button } from "../../../shared/components/button.component";
-import { useModalSearchHook } from "../hooks/use-modal-search-person.hook";
-import { TPerson } from "../types/person.type";
+import { usePersonsHook } from "../hooks/use-persons.hook";
 
 type ModalSearchPersonProps = {
-    open: boolean;
-    onClose: () => void;
-    handleSelectToEdit: (person: TPerson) => void;
+    controller: ReturnType<typeof usePersonsHook>;
 };
 
+export function ModalSearchPerson({ controller }: ModalSearchPersonProps) {
 
-
-export function ModalSearchPerson({ open, onClose, handleSelectToEdit }: ModalSearchPersonProps) {
-
-
-    const modalSearchHook = useModalSearchHook();
 
     const handleSelect = (id: number) => {
-        const person = modalSearchHook.state.persons.find(p => p.id === id);
+        const person = controller.state.persons.find(p => p.id === id);
 
         if (person) {
-            handleSelectToEdit(person)
+            controller.action.handleSelectToEdit(person)
         } else {
             console.log("Person not found");
         }
@@ -51,7 +44,7 @@ export function ModalSearchPerson({ open, onClose, handleSelectToEdit }: ModalSe
                     </IconButton>
                     <IconButton
                         aria-label="delete"
-                        onClick={() => modalSearchHook.action.handleDelete(params.id)}
+                        onClick={() => controller.action.handleDelete(params.id)}
                     >
                         <MdDeleteOutline />
                     </IconButton>
@@ -61,7 +54,7 @@ export function ModalSearchPerson({ open, onClose, handleSelectToEdit }: ModalSe
     ];
 
     return (
-        <Dialog open={open} fullWidth maxWidth="lg" onClose={onClose}>
+        <Dialog open={controller.state.isOpenModal} fullWidth maxWidth="lg" onClose={() => controller.action.setIsOpenModal(false)}>
             <DialogTitle><Title title='Búsqueda Avanzada' /></DialogTitle>
             <DialogContent>
                 <TextField
@@ -69,18 +62,21 @@ export function ModalSearchPerson({ open, onClose, handleSelectToEdit }: ModalSe
                     variant="outlined"
                     label="Buscar..."
                     margin="normal"
-                    value={modalSearchHook.state.filterText}
-                    onChange={(e) => modalSearchHook.action.setFilterText(e.currentTarget.value)}
+                    value={controller.state.filterText}
+                    onChange={(e) => controller.action.setFilterText(e.currentTarget.value)}
                 />
                 <div style={{ height: 400, width: '100%' }}>
                     <DataGrid
-                        rows={modalSearchHook.state.persons}
+                        rows={controller.state.persons}
                         columns={columns}
                     />
                 </div>
                 <Stack direction='row' spacing={2} mt={2} flex={1} justifyContent='flex-end'>
-                    <Button variant="contained" color="primary" onClick={modalSearchHook.action.handleClearModal}>Limpiar</Button>
-                    <Button onClick={onClose} variant="contained" color="error">Cancelar</Button>
+                    <Button variant="contained" color="primary" onClick={controller.action.handleClearModal}>Limpiar</Button>
+                    <Button onClick={() => {
+                        controller.action.setIsOpenModal(false)
+                        controller.action.handleClearModal()
+                    }} variant="contained" color="error">Cancelar</Button>
                 </Stack>
 
             </DialogContent>

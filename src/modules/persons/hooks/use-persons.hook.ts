@@ -1,12 +1,13 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPersonService } from '../services/create-person.service';
 import { TPerson } from '../types/person.type';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { TPersonFormData } from '../types/person-form-data.type';
-import { api } from '../../../shared/libs/axios';
 import Swal from 'sweetalert2'
 import { searchPersonsService } from '../services/search-person.service';
+import { updatePersonService } from '../services/update-person.service';
+import { deletePersonService } from '../services/delete-person.service';
 
 export function usePersonsHook() {
 
@@ -15,6 +16,8 @@ export function usePersonsHook() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
     const [typeOperation, setTypeOperation] = useState<'create' | 'edit'>('create');
+        const [filterText, setFilterText] = useState('');
+    const [persons, setPersons] = useState([] as TPerson[]);
 
     const form = useForm<TPersonFormData>({
         defaultValues: {
@@ -111,7 +114,7 @@ export function usePersonsHook() {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                 try {
-                    await api.put(`/persons/${data.id}`, data);
+                    await updatePersonService(data);
                 } catch (error) {
                     console.error(error);
                 }
@@ -167,6 +170,45 @@ export function usePersonsHook() {
 
     };
 
+     const handleDelete = async (id: number) => {
+
+        Swal.fire({
+            title: '¿Estás seguro de que deseas borrar esta persona?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, borrar!',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+
+                try {
+                    await deletePersonService(id);
+
+
+                    setPersons(persons.filter(person => person.id !== id));
+
+                 Swal.fire(
+                    '¡Borrado!',
+                    'La persona ha sido borrada.',
+                    'success'
+                )
+
+                clearForm();
+                } catch (error) {
+                    Swal.fire(
+                        '¡Error!',
+                        'No se ha podido borrar la persona.',
+                        'error'
+                    )
+                }
+            }
+        });
+
+    }
+
     const handleSearch = async () => {
 
         try {
@@ -206,6 +248,29 @@ export function usePersonsHook() {
         }
     };
 
+        const submitSearch = async (filterText: string) => {
+        const response = await searchPersonsService({ filterText });
+
+        if (response) {
+            setPersons(response.data);
+        }
+
+        return;
+    }
+
+    const handleClearModal = () => {
+        setPersons([])
+        setFilterText('')
+    }
+
+    useEffect(() => {
+        const delay = setTimeout(() => {
+            submitSearch(filterText);
+        }, 500);
+
+        return () => clearTimeout(delay);
+    }, [filterText]);
+
     return {
         action: {
             handleSubmit,
@@ -215,12 +280,17 @@ export function usePersonsHook() {
             setDocumentNumber,
             setIsOpenModal,
             handleClearForm,
-            handleSelectToEdit
+            handleSelectToEdit,
+            handleDelete,
+            handleClearModal,
+            setFilterText
         },
         state: {
             isLoading,
             isOpenModal,
-            typeOperation
+            typeOperation,
+            persons,
+            filterText
         }
     };
 }
